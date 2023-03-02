@@ -1,1 +1,1 @@
-from socket_like_requests import REQ
+from slr import REQ
