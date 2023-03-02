@@ -1,10 +1,13 @@
 # Socket-Like-Requests
 Send Requests With Socket Like The Default Requests Module in Python
 
+# Download
+```pip install socket-like-requests
+
 
   ```python
   # this is how to import it
-from slr import REQ
+from socket-like-requests import REQ
 
 ```
 
