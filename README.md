@@ -2,7 +2,7 @@
 Send Requests With Socket Like The Default Requests Module in Python
 
 # Download
-```pip install socket-like-requests
+```pip install socket-like-requests```
 
 
   ```python
