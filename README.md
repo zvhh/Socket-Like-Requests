@@ -1,6 +1,10 @@
 # Socket-Like-Requests
 Send Requests With Socket Like The Default Requests Module in Python
 
+  ```python
+from slr import REQ
+
+```
 
 # POST Method With
 
