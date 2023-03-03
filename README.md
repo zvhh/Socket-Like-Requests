@@ -7,7 +7,7 @@ Send Requests With Socket Like The Default Requests Module in Python
 
   ```python
   # this is how to import it
-from socket_like_requests import REQ
+from socket_like_requests import req
 
 ```
 
@@ -26,7 +26,7 @@ My Module :
 
 
   ```python
-r = REQ().post('example.com')
+r = req.post('example.com')
 
 ```
 </p>
@@ -71,7 +71,7 @@ My Module
   data["Key2"] = "Value2"
   data["Key3"] = "Value3"
   
-r = REQ().post('example.com', headers = hed, data = data)
+r = req.post('example.com', headers = hed, data = data)
 
 ```
 </p>
@@ -87,7 +87,7 @@ r = REQ().post('example.com', headers = hed, data = data)
   Example :
   
   ```python
-  r = REQ().post('example.com', proxy = 'ip:port', proxy_type = 'socks4')
+  r = req.post('example.com', proxy = 'ip:port', proxy_type = 'socks4')
 
 ```
   and the proxy type : ```http, socks4, socks5```
@@ -100,7 +100,7 @@ r = REQ().post('example.com', headers = hed, data = data)
 
   
   ```python
-r = REQ().post('example.com', verify = True)
+r = req.post('example.com', verify = True)
 
 ```
   
@@ -115,7 +115,7 @@ r = REQ().post('example.com', verify = True)
   Default Timeout is 5 , but you can change it like this :
   
   ```python
-r = REQ().post('example.com', timeout = 5)
+r = req.post('example.com', timeout = 5)
 
 ```
  
@@ -129,7 +129,7 @@ r = REQ().post('example.com', timeout = 5)
   To Print Response :
   
   ```python
-r = REQ().post('example.com')
+r = req.post('example.com')
   print(r.text)
 
 ```
@@ -145,7 +145,7 @@ r = REQ().post('example.com')
   To Print Status Code :
   
   ```python
-r = REQ().post('example.com')
+r = req.post('example.com')
   print(r.sc)
 
 ```
@@ -169,7 +169,7 @@ r = REQ().post('example.com')
   data["Key2"] = "Value2"
   data["Key3"] = "Value3"
   
-r = REQ().post('example.com', headers = hed, data = data, proxy = 'ip:port', proxy_type = 'socks4', verify = True, timeout = 5)
+r = req.post('example.com', headers = hed, data = data, proxy = 'ip:port', proxy_type = 'socks4', verify = True, timeout = 5)
   print(r.text, r.sc)
 
 ```
