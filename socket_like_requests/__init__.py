@@ -1,1 +1,1 @@
-from slr import REQ
+from .slr import REQ

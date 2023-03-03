@@ -193,7 +193,7 @@ class Response:
         return sc
     
 
-REQ()
+req = REQ()
     
     
     

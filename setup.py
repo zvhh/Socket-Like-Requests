@@ -2,13 +2,13 @@ from distutils.core import setup
 setup(
   name = 'socket_like_requests',
   packages = ['socket_like_requests'],
-  version = '0.2',
+  version = '0.0.2',
   license='MIT',
   description = 'Use Socket Like Requests Module',
   author = 'Sami',         
   author_email = 'sami2700@outlook.com', 
   url = 'https://github.com/zvhh/Socket-Like-Requests',
-  download_url = 'https://github.com/zvhh/Socket-Like-Requests/archive/refs/tags/0.2.tar.gz',   
+  download_url = 'https://github.com/zvhh/Socket-Like-Requests/archive/refs/tags/0.1.tar.gz',   
   keywords = ['Requests', 'TCP Request', 'Socket'],
   install_requires=[          
       ],
