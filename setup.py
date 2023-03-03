@@ -2,7 +2,7 @@ from distutils.core import setup
 setup(
   name = 'socket_like_requests',
   packages = ['socket_like_requests'],
-  version = '0.0.1',
+  version = '0.0.2',
   license='MIT',
   description = 'Use Socket Like Requests Module',
   author = 'Sami',         
