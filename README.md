@@ -169,7 +169,7 @@ r = REQ().post('example.com')
   data["Key2"] = "Value2"
   data["Key3"] = "Value3"
   
-r = REQ().post('example.com', headers = hed, data = data, proxy = 'ip:port', proxy_type = 'socks4', verify = True, timeout = 5)
+r = REQ().post('example.com', hed = hed, data = data, proxy = 'ip:port', proxy_type = 'socks4', verify = True, timeout = 5)
   print(r.text, r.sc)
 
 ```
