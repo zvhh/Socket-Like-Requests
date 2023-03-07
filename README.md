@@ -1,5 +1,5 @@
 # Socket-Like-Requests
-Send Requests With Socket Like The Default Requests Module in Python
+Send Requests With Socket Like The Default Requests Module in Python but Faster
 
 # Download
 ```pip install socket_like_requests```
