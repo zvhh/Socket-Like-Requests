@@ -71,7 +71,7 @@ My Module
   data["Key2"] = "Value2"
   data["Key3"] = "Value3"
   
-r = REQ().post('example.com', headers = hed, data = data)
+r = REQ().post('example.com', hed = hed, data = data)
 
 ```
 </p>
