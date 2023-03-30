@@ -17,7 +17,7 @@ from socket_like_requests import REQ
 
 
   ```python
-r = requests.post('example.com')
+r = requests.post('https://example.com')
 
 ```
 
@@ -26,7 +26,7 @@ My Module :
 
 
   ```python
-r = REQ().post('example.com')
+r = REQ().post('https://example.com')
 
 ```
 </p>
