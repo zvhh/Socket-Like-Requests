@@ -1,5 +1,5 @@
 # Socket-Like-Requests
-Send Requests With Socket Like The Default Requests Module in Python but Faster
+Send Requests With Socket Like The Default Requests Module in Python
 
 # Download
 ```pip install socket_like_requests```
@@ -17,7 +17,7 @@ from socket_like_requests import REQ
 
 
   ```python
-r = requests.post('https://example.com')
+r = requests.post('example.com')
 
 ```
 
@@ -26,7 +26,7 @@ My Module :
 
 
   ```python
-r = REQ().post('https://example.com')
+r = REQ().post('example.com')
 
 ```
 </p>
@@ -71,7 +71,7 @@ My Module
   data["Key2"] = "Value2"
   data["Key3"] = "Value3"
   
-r = REQ().post('example.com', hed = hed, data = data)
+r = REQ().post('example.com', headers = hed, data = data)
 
 ```
 </p>
@@ -169,7 +169,7 @@ r = REQ().post('example.com')
   data["Key2"] = "Value2"
   data["Key3"] = "Value3"
   
-r = REQ().post('example.com', hed = hed, data = data, proxy = 'ip:port', proxy_type = 'socks4', verify = True, timeout = 5)
+r = REQ().post('example.com', headers = hed, data = data, proxy = 'ip:port', proxy_type = 'socks4', verify = True, timeout = 5)
   print(r.text, r.sc)
 
 ```

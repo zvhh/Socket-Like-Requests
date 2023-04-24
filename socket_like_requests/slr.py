@@ -9,21 +9,34 @@ class REQ:
     
     def data(self, data=None):
         
-        ls = []
-
-        for m, n in data.items():
-            ls.append(f'{m}={n}')
-            
-        zx = '&'.join(ls)
+        if data != None:
         
-        return zx
+            ls = []
+
+            for m, n in data.items():
+                ls.append(f'{m}={n}')
+                
+            zx = '&'.join(ls)
+            
+            zx = f'Content-Length: {len(zx)}\r\n\r\n{zx}'
+            
+            return zx
         
     def hed(self, hed=None):
         
         a = []
         
+        if hed == None:
+            
+            hed = {}
+            hed['User-Agent'] = f'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0 Safari/537.36'
+            hed['Accept-Language'] = 'en-US'
+            hed['Accept'] = '*/*'
+            hed['Connection'] = 'close'
+            hed['Content-Type'] = 'application/x-www-form-urlencoded'
+
         for k, v in hed.items():
-            if k.__contains__('Content-Length') or k.__contains__('Host'):
+            if 'Content-Length' in k or 'Host' in k:
                 pass
             
             else:
@@ -36,58 +49,79 @@ class REQ:
     def proxy(self, s, type, auth=None):
 
 
-        if type.__contains__('https'):
+
+        if type == None:
             
-            return self.https(s)
+            return s
+
+        if 'https' in type:
+            
+            return self.https(s, auth)
             
                     
-        elif type.__contains__('http'): # need test
+        elif 'http' in type:
             
             return s
             
-            
-        elif type.__contains__('socks4'):
+        elif 'socks4' in type:
             
             return self.socks4(s)
                 
                 
-        elif type.__contains__('socks5'):
+        elif 'socks5' in type:
             
             return self.socks5(s)
-            
-            
-        elif type.__contains__('http giga'):
-            
-            return self.http_auth(s, auth)
-            
-            
-    def http_auth(self, s, auth):
         
-        user,pa = auth.split(':')
-        auth_a = base64.b64encode(f'{user}:{pa}'.encode()).decode()
-        hed = f'CONNECT www.{self.path}:{self.port} HTTP/1.1\r\nHost: www.{self.path}\r\nProxy-Authorization: Basic {auth_a}\r\n\r\n'.encode()
-        s.sendall(hed)
         
-        response = s.recv(20)
-        if not response.__contains__(b'200 OK'): # Need Test Again
-            raise Exception('Proxy Failed')
             
-        return s
+            
+    # def http_auth(self, s, auth):
+        
+        
+    #     hed = f'CONNECT www.{self.path}:{self.port} HTTP/1.1\r\nHost: www.{self.path}\r\nProxy-Authorization: Basic {auth_a}\r\n\r\n'.encode()
+    #     s.sendall(hed)
+        
+    #     response = s.recv(20)
+    #     if not response.__contains__(b'200 OK'): # Need Test Again
+    #         raise Exception('Proxy Failed')
+            
+    #     return s
     
-    def https(self, s):
+    # def https(self, s, auth):
         
-        s.sendall(f'CONNECT www.{self.path}:{self.port} HTTP/1.0\r\n\r\n'.encode())
-        response = s.recv(20)
-        #print(response)
+    #     s.sendall(f'CONNECT {self.path}:{self.port} HTTP/1.1\r\nHost: {self.path}{auth}\r\n\r\n'.encode())
+    #     response = s.recv(70)
+        
+    #     if not response.__contains__(b'200'): # Need Test Again
+    #         raise Exception('Proxy Failed')
+        
+    #     return s
+    def https(self, s, auth):
+        
+        s.sendall(f'CONNECT {self.path}:{self.port} HTTP/1.1\r\n{auth}\r\n\r\n'.encode())
+        response = s.recv(70)
         
         return s
         
     def socks4(self, s):
         
         s.sendall(b'\x04\x01' + struct.pack('>H', self.port) + socket.inet_aton(socket.gethostbyname(f'{self.path}')) + b'\x00')
-        response = s.recv(8)
+        response = s.recv(12)
+       
+        if not response:
+            raise Exception('Null')
+        
         if response[0] != 0x00:
-            raise Exception('Bad Proxy')
+            raise Exception('Wrong Socks Version')
+    
+        if response[0:1] != b'\x00':
+            raise Exception('Bad Data')
+        
+        resp = ord(response[1:2])
+        
+        if resp != 0x5A:
+            #print(resp)
+            raise Exception('socks4 Error')
         
         
         return s
@@ -117,32 +151,30 @@ class REQ:
     def verify(self, s):
         
         if self.port == 443:
-        
-            s = ssl.create_default_context().wrap_socket(s, server_hostname=f'{self.path}')
+
+            #s = ssl.create_default_context().wrap_socket(s, server_hostname=f'{self.path}')
+            s = ssl.wrap_socket(s)
     
         return s
 
     def path_de(self, path, hh=None, po=None):
         
-        #print(path)
-        
         ho, xz = path.split('://')
-       # print(ho)
         
         if ho.__contains__('https'):
             po = 443
-            #print('port = 443')
+            
             
         elif ho.__contains__('http'):
-            #print('port = 80')
             po = 80
+        
         
         z = xz.split('/')
         host = z[0]
         
+        
         z.remove(z[0])
         hh = '/'.join(z)
-        
         
         
         hh = '/' + hh
@@ -164,78 +196,128 @@ class REQ:
         return self.send(path, 'POST', **kwargs)
     
         
-    def send(self, path ,method=None, hed=None, data=None, proxy=None, verify=None, proxy_type=None, auth=None, timeout=5):
+    def connect(self, s, proxy):
         
-        self.path, hh, self.port = self.path_de(path)
-        
-        #print(self.port)
-
-        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM, 0)
-
-        socket.setdefaulttimeout(timeout)
-        ip, port = proxy.split(':')
+        if proxy == None:
+            ip = self.path
+            port = self.port
+            
+        else:
+            
+            ip, port = proxy.split(':')
+            
         s.connect((f'{ip}', int(port)))
         
-        s = self.proxy(s, proxy_type, auth)
+        return s
         
-        if verify == None or verify == True:
-            s = self.verify(s)
+    def auths(self, auth):
+        
+        user,pa = auth.split(':')
+        auth_a = base64.b64encode(f'{user}:{pa}'.encode()).decode()
+        auth = f'\r\nProxy-Authorization: Basic {auth_a}'
+        
+        return auth
+        
+    def conf(self, s, path, proxy, proxy_type, auth, verify, hh):
+        
+        try:
+        
+            s = self.connect(s, proxy)
+            
+            if not auth == None:
+                
+                auth = self.auths(auth)
+                
+                
+            s = self.proxy(s, proxy_type, auth)
+            
+            if verify == None or verify == True:
+                s = self.verify(s)
 
-        if proxy_type.__contains__('http'):
-            hh = path
+            if proxy_type == None:
+                pass
+            
+            elif proxy_type.__contains__('http'):
+                hh = path
+                
+        except:
+            pass
 
 
-        hed = f'{method} {hh} HTTP/1.1\r\nHost: {self.path}\r\nContent-Length: {len(self.data(data))}\r\n{self.hed(hed)}\r\n{self.data(data)}'.encode()
-        #print(hed)
-        s.sendall(hed)
+        return s, hh
         
         
+    def send(self, path, method=None, hed=None, data=None, proxy=None, verify=None, proxy_type=None, auth=None, timeout=5):
+        
+        self.path, hh, self.port = self.path_de(path)
+
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+        socket.setdefaulttimeout(timeout)
+        
+        s, hh = self.conf(s, path, proxy, proxy_type, auth, verify, hh)
+        
+        hed = f'{method} {hh} HTTP/1.1\r\nHost: {self.path}\r\n{self.hed(hed)}{self.data(data)}'.encode()
+        
+        #print(hed, '\n\n')
         lst = []
         
+        s.sendall(hed)
+
         while True:
+            
             data = s.recv(1024)
             if (len(data) < 1):
                 break
-            rr = data.decode()
-            lst.append(rr)
-        
+            lst.append(data.decode())
+    
         qz = ' '.join(lst)
-        
-        #
-        
+
         s.close()
-        
-        #ga = (f'{sc}\n\n{qq}')
-        
-        
+
         return Response(qz)
-        
-    
-    
-class met:
-    
-    pass
     
     
 class Response:
     
     def __init__(self, qz):
         self.qz = qz
+
+        
     
     @property
     def text(self):
-        
+
         q = self.qz.split('\r\n\r\n')[1]
 
         return q
-    
-    
+
     @property
     def sc(self):
         
-        status_code = int(self.qz.splitlines()[0].split(' ')[1])
+        try:
 
-        return status_code
+            status_code = int(self.qz.splitlines()[0].split(' ')[1])
+
+            return status_code
+        
+        except:
+
+            if 'Too many open connections' in self.qz:
+                
+                return 421
+
+            elif 'Bad Request' in self.qz:
+
+                return 400
+
+        
+    @property
+    def headers(self):
+        
+        cont = self.qz.split('\r\n\r\n')[0]
+        
+        return cont
     
 
 req = REQ()
