@@ -1,11 +1,5 @@
 import socket, ssl, base64, struct
 
-
-# For Any Help Contact Me :
-# instagram : zvhk
-# email : sami2700@outlook.com
-# discord : zvhk#0007
-
 class REQ:
     
     def __init__(self):
@@ -15,7 +9,7 @@ class REQ:
     
     def data(self, data=None):
         
-        if not len(data) < 1:
+        if data != None:
         
             ls = []
 
@@ -32,6 +26,15 @@ class REQ:
         
         a = []
         
+        if hed == None:
+            
+            hed = {}
+            hed['User-Agent'] = f'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0 Safari/537.36'
+            hed['Accept-Language'] = 'en-US'
+            hed['Accept'] = '*/*'
+            hed['Connection'] = 'close'
+            hed['Content-Type'] = 'application/x-www-form-urlencoded'
+
         for k, v in hed.items():
             if 'Content-Length' in k or 'Host' in k:
                 pass
@@ -95,7 +98,7 @@ class REQ:
     #     return s
     def https(self, s, auth):
         
-        s.sendall(f'CONNECT {self.path}:{self.port} HTTP/1.1\r\n\r\n{auth}'.encode())
+        s.sendall(f'CONNECT {self.path}:{self.port} HTTP/1.1\r\n{auth}\r\n\r\n'.encode())
         response = s.recv(70)
         
         return s
@@ -148,8 +151,9 @@ class REQ:
     def verify(self, s):
         
         if self.port == 443:
-        
-            s = ssl.create_default_context().wrap_socket(s, server_hostname=f'{self.path}')
+
+            #s = ssl.create_default_context().wrap_socket(s, server_hostname=f'{self.path}')
+            s = ssl.wrap_socket(s)
     
         return s
 
@@ -247,7 +251,7 @@ class REQ:
         
         self.path, hh, self.port = self.path_de(path)
 
-        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM, 0)
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
         socket.setdefaulttimeout(timeout)
         
@@ -256,47 +260,58 @@ class REQ:
         hed = f'{method} {hh} HTTP/1.1\r\nHost: {self.path}\r\n{self.hed(hed)}{self.data(data)}'.encode()
         
         #print(hed, '\n\n')
-
-        s.sendall(hed)
-        
         lst = []
         
+        s.sendall(hed)
+
         while True:
+            
             data = s.recv(1024)
             if (len(data) < 1):
                 break
             lst.append(data.decode())
-            
     
         qz = ' '.join(lst)
-        
+
         s.close()
 
         return Response(qz)
-        
     
     
 class Response:
     
     def __init__(self, qz):
         self.qz = qz
+
+        
     
     @property
     def text(self):
-    
-            
+
         q = self.qz.split('\r\n\r\n')[1]
 
         return q
-    
-    
+
     @property
     def sc(self):
         
-        status_code = int(self.qz.splitlines()[0].split(' ')[1])
+        try:
 
-        return status_code
-    
+            status_code = int(self.qz.splitlines()[0].split(' ')[1])
+
+            return status_code
+        
+        except:
+
+            if 'Too many open connections' in self.qz:
+                
+                return 421
+
+            elif 'Bad Request' in self.qz:
+
+                return 400
+
+        
     @property
     def headers(self):
         
